@@ -1,12 +1,14 @@
-const notes = require ('/db/db.json');
-pathname = ('./notes.html')
+const { notes } = require ('/db/db.json');
+const fs = require('fs');
+const path = require('path');
+
 let noteTitle;
 let noteText;
 let saveNoteBtn;
 let newNoteBtn;
 let noteList;
 
-if (window.location.pathname === './notes.html') {
+if (window.location.pathname === '/notes') {
   noteTitle = document.querySelector('.note-title');
   noteText = document.querySelector('.note-textarea');
   saveNoteBtn = document.querySelector('.save-note');
@@ -44,6 +46,8 @@ const saveNote = (note) =>
     },
     body: JSON.stringify(note),
   });
+
+  
 
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
@@ -185,3 +189,4 @@ if (window.location.pathname === '/notes') {
 
 getAndRenderNotes();
 
+saveNoteBtn.addEventListener('click', handleNoteSave);
