@@ -1,12 +1,15 @@
-const { notes } = require ('/db/db.json');
-const fs = require('fs');
+const res = require('express/lib/response');
 const path = require('path');
+window.location.pathname = notes;
+const { notes } = ('./db/db.json');
+
 
 let noteTitle;
 let noteText;
 let saveNoteBtn;
 let newNoteBtn;
 let noteList;
+let activeNote;
 
 if (window.location.pathname === '/notes') {
   noteTitle = document.querySelector('.note-title');
@@ -27,7 +30,7 @@ const hide = (elem) => {
 };
 
 // activeNote is used to keep track of the note in the textarea
-let activeNote = {};
+let activeNote = { }
 
 const getNotes = () =>
   fetch('/api/notes', {
@@ -35,18 +38,24 @@ const getNotes = () =>
     headers: {
       'Content-Type': 'application/json',
     },
-  
   });
 
 const saveNote = (note) =>
-  fetch('/api/notes', {
+  fetch('/api/notes/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(note),
+    }, body: JSON.stringify(note)
+  })
+  .then((res) => res.join())
+  .then((data) => {
+    console.log('POST', data);
+    return data;
+  }) 
+  .catch((error) => {
+    console.log('Error')
   });
-
+  
   
 
 const deleteNote = (id) =>
@@ -65,12 +74,14 @@ const renderActiveNote = () => {
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
+    
   } else {
     noteTitle.removeAttribute('readonly');
     noteText.removeAttribute('readonly');
     noteTitle.value = '';
     noteText.value = '';
   }
+
 };
 
 const handleNoteSave = () => {
@@ -116,7 +127,7 @@ const handleNewNoteView = (e) => {
 };
 
 const handleRenderSaveBtn = () => {
-  if (!noteTitle.value.trim() || !noteText.value.trim()) {
+  if (!noteTitle.value.trim() === !noteText.value.trim()) {
     hide(saveNoteBtn);
   } else {
     show(saveNoteBtn);
@@ -134,6 +145,7 @@ const renderNoteList = async (notes) => {
 
   // Returns HTML element with or without a delete button
   const createLi = (text, delBtn = true) => {
+    
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
 
@@ -189,4 +201,3 @@ if (window.location.pathname === '/notes') {
 
 getAndRenderNotes();
 
-saveNoteBtn.addEventListener('click', handleNoteSave);
