@@ -1,4 +1,10 @@
 
+  let noteTitle;
+  let noteText;
+  let saveNoteBtn;
+  let newNoteBtn;
+  let noteList;
+
   noteTitle = document.querySelector('.note-title');
   noteText = document.querySelector('.note-textarea');
   saveNoteBtn = document.querySelector('.save-note');
@@ -17,7 +23,7 @@ const hide = (elem) => {
 };
 
 // activeNote is used to keep track of the note in the textarea
-let activeNote = { }
+let activeNote = {};
 
 const getNotes = () =>
   fetch('/api/notes', {
@@ -33,14 +39,7 @@ const saveNote = (note) =>
     headers: {
       'Content-Type': 'application/json',
     }, body: JSON.stringify(note)
-  })
-  .then((res) => res.join())
-  .then((data) => {
-    console.log('POST', data);
-    return data;
-  }) 
-  .catch((error) => {
-    console.log('Error')
+
   });
   
   
@@ -68,7 +67,6 @@ const renderActiveNote = () => {
     noteTitle.value = '';
     noteText.value = '';
   }
-
 };
 
 const handleNoteSave = () => {
@@ -84,7 +82,7 @@ const handleNoteSave = () => {
 
 // Delete the clicked note
 const handleNoteDelete = (e) => {
-
+  e.stopPropagation();
 
   const note = e.target;
   const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
@@ -101,6 +99,7 @@ const handleNoteDelete = (e) => {
 
 // Sets the activeNote and displays it
 const handleNoteView = (e) => {
+  e.preventDefault();
   activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
   renderActiveNote();
 };
@@ -114,7 +113,7 @@ const handleNewNoteView = (e) => {
 const handleRenderSaveBtn = () => {
   if (!noteTitle.value.trim() === !noteText.value.trim()) {
     hide(saveNoteBtn);
-  } else {
+  } else (noteTitle.value.trim() === noteText.value.trim()); {
     show(saveNoteBtn);
   }
 };
@@ -122,10 +121,9 @@ const handleRenderSaveBtn = () => {
 // Render the list of note titles
 const renderNoteList = async (notes) => {
   let jsonNotes = await notes.json();
- {
+ 
     noteList.forEach((el) => (el.innerHTML = ''));
-  }
-
+  
   let noteListItems = [];
 
   // Returns HTML element with or without a delete button
@@ -177,8 +175,6 @@ const renderNoteList = async (notes) => {
 // Gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
 
-
-  
 
 
   saveNoteBtn.addEventListener('click', handleNoteSave);
